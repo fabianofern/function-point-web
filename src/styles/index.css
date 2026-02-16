@@ -1,0 +1,85 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+/* Print Styles */
+@media print {
+  /* Hide UI elements */
+  .sidebar-nav,
+  header,
+  .no-print,
+  button,
+  .btn,
+  .material-symbols-outlined {
+    display: none !important;
+  }
+
+  /* Reset layout constraints */
+  body, #root, main, .main-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: white !important;
+    display: block !important;
+  }
+
+  /* Ensure reports content uses full width */
+  .reports-container, .report-content, .report-print-area {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: white !important;
+  }
+  
+  /* Report specific adjustments */
+  .report-content {
+    padding: 0 !important;
+  }
+  
+  /* Typography adjustments */
+  body {
+    font-size: 11pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  /* Table adjustments */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+  
+  th, td {
+    border: 1px solid #ddd !important;
+    padding: 4px 8px !important;
+  }
+  
+  /* Page break rules */
+  h2, h3 {
+    page-break-after: avoid;
+  }
+  
+  .card, .section-box {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    border: 1px solid #eee;
+  }
+}
