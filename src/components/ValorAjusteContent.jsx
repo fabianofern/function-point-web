@@ -155,11 +155,11 @@ const ValorAjusteContent = ({ projeto, onVAChange }) => {
     const [modoEdicao, setModoEdicao] = useState('manual'); // 'manual' ou 'perfil'
     const [perfilSelecionado, setPerfilSelecionado] = useState('');
     const [mostrarInfo, setMostrarInfo] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [lastSavedTime, setLastSavedTime] = useState(null);
 
     // Ref para controlar se é a primeira renderização
     const isFirstRender = useRef(true);
-    // Ref para armazenar o timeout do debounce
-    const timeoutRef = useRef(null);
 
     // Cálculo do VAF
     const calcularVAF = useCallback(() => {
@@ -176,36 +176,24 @@ const ValorAjusteContent = ({ projeto, onVAChange }) => {
 
     const vafAtual = calcularVAF();
 
-    // Atualizar VAF no componente pai quando mudar (com debounce e sem causar loop)
-    useEffect(() => {
-        // Ignora a primeira renderização
-        if (isFirstRender.current) {
-            isFirstRender.current = false;
-            return;
+    // Função manual para salvar
+    const handleSave = async () => {
+        if (!onVAChange) return;
+
+        setIsSaving(true);
+        try {
+            await onVAChange({
+                valor: vafAtual.valor,
+                caracteristicas: { ...caracteristicas },
+                dataCalculo: new Date().toISOString()
+            });
+            setLastSavedTime(new Date().toLocaleTimeString());
+            setTimeout(() => setIsSaving(false), 2000);
+        } catch (error) {
+            console.error('Erro ao salvar VAF:', error);
+            setIsSaving(false);
         }
-
-        // Limpa timeout anterior
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
-        }
-
-        // Define novo timeout para evitar múltiplas chamadas rápidas
-        timeoutRef.current = setTimeout(() => {
-            if (onVAChange) {
-                onVAChange({
-                    valor: vafAtual.valor,
-                    caracteristicas: { ...caracteristicas },
-                    dataCalculo: new Date().toISOString()
-                });
-            }
-        }, 300); // 300ms de debounce
-
-        return () => {
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-            }
-        };
-    }, [vafAtual.valor]); // Só depende do valor calculado, não das características inteiras
+    };
 
     // Handler para mudança de valor individual - usa string temporária para evitar flick
     const handleCaracteristicaChange = (id, valor) => {
@@ -300,13 +288,45 @@ const ValorAjusteContent = ({ projeto, onVAChange }) => {
                         </p>
                     </div>
                 </div>
-                <button
-                    style={styles.botaoInfo}
-                    onClick={() => setMostrarInfo(!mostrarInfo)}
-                    title="Informações sobre VAF"
-                >
-                    ℹ️
-                </button>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    {lastSavedTime && (
+                        <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: '500' }}>
+                            Último salvamento: {lastSavedTime}
+                        </span>
+                    )}
+                    <button
+                        style={{
+                            ...styles.botaoInfo,
+                            backgroundColor: isSaving ? '#f3f4f6' : '#1683c2',
+                            color: isSaving ? '#94a3b8' : 'white',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            fontSize: '0.875rem',
+                            padding: '10px 20px',
+                            fontWeight: '700',
+                            border: 'none',
+                            cursor: isSaving ? 'not-allowed' : 'pointer'
+                        }}
+                        onClick={handleSave}
+                        disabled={isSaving}
+                    >
+                        <span className="material-symbols-outlined" style={{
+                            fontSize: '20px',
+                            animation: isSaving ? 'spin 1s linear infinite' : 'none'
+                        }}>
+                            {isSaving ? 'sync' : 'save'}
+                        </span>
+                        {isSaving ? 'Salvando...' : 'Salvar no Projeto'}
+                    </button>
+                    <button
+                        style={styles.botaoInfo}
+                        onClick={() => setMostrarInfo(!mostrarInfo)}
+                        title="Informações sobre VAF"
+                    >
+                        ℹ️
+                    </button>
+                </div>
             </div>
 
             {/* Painel de Informações */}

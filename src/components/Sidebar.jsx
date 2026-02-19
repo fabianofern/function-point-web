@@ -487,7 +487,7 @@ const Sidebar = ({ currentPage, onNavigate }) => {
               disabled={!empresaAtualObj}
             >
               <span className="material-symbols-outlined">settings</span>
-              <span>Cadastro de Empresas</span>
+              <span>Configurações da Empresa</span>
               {!empresaAtualObj && (
                 <span style={styles.disabledBadge} title="Selecione uma empresa primeiro">
                   <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>

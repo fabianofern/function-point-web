@@ -13,7 +13,7 @@ const Header = () => {
 
   const [statusText, setStatusText] = useState('Sincronizado');
   const [statusIcon, setStatusIcon] = useState('cloud_done');
-  const [statusColor, setStatusColor] = useState('#3b82f6');
+  const [statusColor, setStatusColor] = useState('#1683c2');
   const [valorTotalFormatado, setValorTotalFormatado] = useState('R$ 0,00');
 
   // Atualizar status dinamicamente
@@ -28,12 +28,11 @@ const Header = () => {
         setStatusText('Salvo');
         setStatusIcon('check_circle');
         setStatusColor('#10b981');
-        // Resetar após 2 segundos
         setTimeout(() => {
           if (saveStatus === 'saved') {
             setStatusText('Sincronizado');
             setStatusIcon('cloud_done');
-            setStatusColor('#3b82f6');
+            setStatusColor('#1683c2');
           }
         }, 2000);
         break;
@@ -45,14 +44,13 @@ const Header = () => {
       default:
         setStatusText('Sincronizado');
         setStatusIcon('cloud_done');
-        setStatusColor('#3b82f6');
+        setStatusColor('#1683c2');
     }
   }, [saveStatus]);
 
-  // Atualizar valor total formatado
   useEffect(() => {
     const valorPF = empresaAtualObj?.valorPF || 850.00;
-    const valorTotal = totals.totalPF * valorPF;
+    const valorTotal = (totals.totalPF || 0) * valorPF;
 
     const formatado = new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -63,23 +61,26 @@ const Header = () => {
     setValorTotalFormatado(formatado);
   }, [totals.totalPF, empresaAtualObj?.valorPF]);
 
-  // Debug: Monitorar mudanças
-  useEffect(() => {
-    console.log('🏢 [Header] Estado atual:', {
-      empresaSelecionada: empresaAtualObj?.nome || 'Nenhuma',
-      empresaIndex: empresaAtual,
-      valorPF: empresaAtualObj?.valorPF,
-      totalPF: totals.totalPF,
-      saveStatus
-    });
-  }, [empresaAtualObj, empresaAtual, totals.totalPF, saveStatus]);
-
   return (
     <header style={styles.header}>
       <div style={styles.headerContent}>
-        {/* Lado esquerdo: Logo */}
+        {/* Lado esquerdo: Logo/Banner */}
         <div style={styles.headerLeft}>
-          <img src="/banner.png" alt="StandardPoint Banner" style={{ height: '80px', objectFit: 'contain' }} />
+          <img
+            src="/banner.png"
+            alt="StandardPoint Banner"
+            style={{
+              height: '50px',
+              width: 'auto',
+              maxHeight: '100%',
+              objectFit: 'contain',
+              display: 'block'
+            }}
+            onError={(e) => {
+              console.error('Erro ao carregar banner.png');
+              e.currentTarget.style.display = 'none';
+            }}
+          />
         </div>
 
         {/* Centro: Selectors */}
@@ -89,7 +90,6 @@ const Header = () => {
 
         {/* Lado direito: Status e valor */}
         <div style={styles.headerRight}>
-          {/* Valor Total - Só mostra se tem empresa selecionada */}
           {empresaAtual !== null && (
             <div style={styles.totalValue}>
               <div style={{ flex: 1 }}>
@@ -109,7 +109,7 @@ const Header = () => {
             style={{
               ...styles.statusIndicator,
               borderLeftColor: statusColor,
-              backgroundColor: `${statusColor}15`
+              backgroundColor: `${statusColor}10`
             }}
           >
             <span className="material-symbols-outlined" style={{
@@ -119,7 +119,7 @@ const Header = () => {
             }}>
               {statusIcon}
             </span>
-            <span style={{ color: statusColor, fontSize: '14px', fontWeight: '500' }}>
+            <span style={{ color: statusColor, fontSize: '13px', fontWeight: '600' }}>
               {statusText}
             </span>
           </div>
@@ -129,19 +129,19 @@ const Header = () => {
   );
 };
 
-// ESTILOS EM-LINE (CSS-in-JS) para evitar problemas com CSS externo
+// ESTILOS ATUALIZADOS PARA MELHOR RESPONSIVIDADE E CORES
 const styles = {
   header: {
     backgroundColor: 'white',
     borderBottom: '1px solid #e2e8f0',
     padding: '0 20px',
-    height: '70px',
+    minHeight: '80px',
     display: 'flex',
     alignItems: 'center',
     position: 'sticky',
     top: 0,
-    zIndex: 100,
-    boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+    zIndex: 40,
+    boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
   },
   headerContent: {
     display: 'flex',
@@ -150,84 +150,73 @@ const styles = {
     width: '100%',
     maxWidth: '1400px',
     margin: '0 auto',
-    gap: '20px'
+    gap: '20px',
+    flexWrap: 'wrap', // Permite quebra em telas muito pequenas
+    padding: '10px 0'
   },
   headerLeft: {
     display: 'flex',
-    flexDirection: 'column',
-    minWidth: '200px'
-  },
-  headerTitle: {
-    color: '#0f172a',
-    fontSize: '1.25rem',
-    fontWeight: 'bold',
-    margin: 0,
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    backgroundClip: 'text'
-  },
-  headerSubtitle: {
-    color: '#64748b',
-    fontSize: '0.75rem',
-    display: 'flex',
     alignItems: 'center',
-    marginTop: '2px'
+    minWidth: '180px',
+    flexShrink: 0
   },
   headerCenter: {
     flex: 1,
     display: 'flex',
     justifyContent: 'center',
-    minWidth: '400px',
-    maxWidth: '600px'
+    minWidth: '300px',
+    maxWidth: '700px'
   },
   headerRight: {
     display: 'flex',
     alignItems: 'center',
-    gap: '15px',
-    minWidth: '250px',
-    justifyContent: 'flex-end'
+    gap: '12px',
+    minWidth: '220px',
+    justifyContent: 'flex-end',
+    flexShrink: 0
   },
   totalValue: {
-    backgroundColor: '#f8fafc',
-    border: '1px solid #e2e8f0',
-    borderRadius: '6px',
-    padding: '8px 12px',
+    backgroundColor: '#eff6ff',
+    border: '1px solid #bfdbfe',
+    borderRadius: '12px',
+    padding: '8px 16px',
     display: 'flex',
     alignItems: 'center',
-    gap: '10px',
-    minWidth: '160px'
+    gap: '12px',
+    minWidth: '160px',
+    boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)'
   },
   totalLabel: {
-    fontSize: '11px',
+    fontSize: '10px',
     color: '#64748b',
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
-    fontWeight: '600'
+    fontWeight: '700'
   },
   totalAmount: {
-    fontSize: '14px',
+    fontSize: '13px',
     color: '#0f172a',
-    fontWeight: 'bold'
+    fontWeight: '800'
   },
   pfCount: {
-    backgroundColor: '#1246e2',
+    backgroundColor: '#1683c2',
     color: 'white',
     fontSize: '11px',
-    fontWeight: 'bold',
-    padding: '2px 6px',
-    borderRadius: '10px',
-    minWidth: '40px',
-    textAlign: 'center'
+    fontWeight: '800',
+    padding: '4px 10px',
+    borderRadius: '8px',
+    minWidth: '50px',
+    textAlign: 'center',
+    boxShadow: '0 2px 4px rgba(22, 131, 194, 0.2)'
   },
   statusIndicator: {
     display: 'flex',
     alignItems: 'center',
     gap: '6px',
-    padding: '6px 10px',
-    borderRadius: '6px',
-    borderLeft: '3px solid',
-    fontSize: '14px'
+    padding: '8px 12px',
+    borderRadius: '8px',
+    borderLeft: '4px solid',
+    transition: 'all 0.3s ease'
   }
 };
 

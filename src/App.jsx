@@ -22,14 +22,14 @@ import './styles/index.css';
 
 // ====================== HOOK PARA ROTEAMENTO POR HASH ======================
 const useHashRouter = () => {
-  const [currentPage, setCurrentPage] = useState('');
+  const [currentPage, setCurrentPage] = useState('dashboard');
   const [params, setParams] = useState({});
 
   const parseHash = useCallback((hash) => {
     console.log('🔗 [Router] Parsing hash:', hash);
 
     if (!hash || hash === '#') {
-      return { page: '', params: {} };
+      return { page: 'dashboard', params: {} };
     }
 
     // Remove o #
@@ -236,46 +236,13 @@ function AppContent() {
     );
   }
 
-  // 4. Lógica da Welcome Screen e Navegação
-  // Se não há hash definido OU hash é vazio OU hash é apenas '#', mostrar WelcomeScreen
-  const shouldShowWelcomeScreen =
-    !currentPage ||
-    currentPage === '' ||
-    window.location.hash === '#' ||
-    window.location.hash === '';
-
-  if (shouldShowWelcomeScreen) {
+  // 4. Lógica de Onboarding (Zero Data)
+  // Só mostra WelcomeScreen se não houver NENHUMA empresa cadastrada
+  if (empresas.length === 0) {
     return (
       <WelcomeScreen
         onStart={() => {
-          if (empresas.length > 0) {
-            navigate('minhas-empresas');
-          } else {
-            navigate('empresa', { new: 'true' });
-          }
-        }}
-      />
-    );
-  }
-
-  // Se não tem empresa selecionada e não está na página de empresas/empresa, mostrar WelcomeScreen
-  // Mas permitir 'controle-acessos' se for admin (embora Sidebar cuide da navegação, acesso direto via hash deve ser tratado)
-  // Adicionando 'controle-acessos' e 'backups' como exceções que não precisam de empresa selecionada explicitamente (se fizer sentido, mas geralmente precisam de contexto global, não de empresa específica) -> Na verdade, backups e controle de acesso são globais.
-  if (!empresaAtualObj &&
-    currentPage !== 'minhas-empresas' &&
-    currentPage !== 'empresa' &&
-    currentPage !== 'projetos' &&
-    currentPage !== 'controle-acessos' &&
-    currentPage !== 'backups'
-  ) {
-    return (
-      <WelcomeScreen
-        onStart={() => {
-          if (empresas.length > 0) {
-            navigate('minhas-empresas');
-          } else {
-            navigate('empresa', { new: 'true' });
-          }
+          navigate('empresa', { new: 'true' });
         }}
       />
     );
@@ -301,6 +268,7 @@ function AppContent() {
         flexDirection: 'column',
         transition: 'margin-left 0.3s ease',
         marginLeft: '280px', // Apenas o conteúdo principal tem margin
+        overflowX: 'hidden', // Evita scroll na janela toda
       }}>
         {/* Header agora faz parte do fluxo, não fixo */}
         <Header />
@@ -309,9 +277,10 @@ function AppContent() {
           flex: 1,
           padding: '2rem',
           overflowY: 'auto',
-          maxWidth: '1400px',
           margin: '0 auto',
           width: '100%',
+          maxWidth: '100%', // Muda para 100% para respeitar o viewport
+          boxSizing: 'border-box'
         }}>
 
           {currentPage === 'dashboard' && <DashboardContent onNavigate={handleNavigate} />}
@@ -436,35 +405,197 @@ function DashboardContent({ onNavigate }) {
   } = useFunctionContext();
 
   if (!empresaAtual) {
+    const { empresas, selecionarEmpresa } = useFunctionContext();
+    const hasEmpresas = empresas.length > 0;
+
     return (
       <div style={{
         textAlign: 'center',
-        padding: '4rem 2rem',
+        padding: '3rem 2rem',
+        maxWidth: '900px',
+        margin: '2rem auto',
+        backgroundColor: 'white',
+        borderRadius: '20px',
+        boxShadow: '0 10px 40px rgba(0,0,0,0.04)',
+        border: '1px solid #eef2f6',
+        animation: 'fadeIn 0.6s ease-out'
       }}>
-        <span className="material-symbols-outlined" style={{ fontSize: '64px', color: '#cbd5e1', marginBottom: '1rem' }}>
-          business_off
-        </span>
-        <h2 style={{ color: '#0f172a', marginBottom: '1rem' }}>
-          Nenhuma empresa selecionada
+        <div style={{
+          width: '72px',
+          height: '72px',
+          backgroundColor: '#eff6ff',
+          borderRadius: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          margin: '0 auto 1.5rem',
+        }}>
+          <span className="material-symbols-outlined" style={{ fontSize: '36px', color: '#1683c2' }}>
+            space_dashboard
+          </span>
+        </div>
+
+        <h2 style={{ color: '#0f172a', marginBottom: '0.75rem', fontSize: '2rem', fontWeight: '800', letterSpacing: '-0.5px' }}>
+          Bem-vindo ao Dashboard
         </h2>
-        <p style={{ color: '#64748b', marginBottom: '2rem' }}>
-          Selecione uma empresa no menu "Minhas Empresas" para começar.
+        <p style={{ color: '#64748b', marginBottom: '2.5rem', fontSize: '1.05rem', lineHeight: '1.6', maxWidth: '600px', margin: '0 auto 2.5rem' }}>
+          Para começar a gerenciar seus projetos e métricas, selecione uma organização abaixo ou crie uma nova.
         </p>
-        <button
-          onClick={() => onNavigate('minhas-empresas')}
-          style={{
-            padding: '0.75rem 1.5rem',
-            backgroundColor: '#1246e2',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            fontSize: '0.875rem',
-            fontWeight: '600',
-            cursor: 'pointer',
-          }}
-        >
-          Ir para Minhas Empresas
-        </button>
+
+        {hasEmpresas && (
+          <div style={{ marginBottom: '3rem' }}>
+            <h3 style={{
+              fontSize: '0.875rem',
+              textTransform: 'uppercase',
+              color: '#94a3b8',
+              fontWeight: '700',
+              letterSpacing: '1px',
+              marginBottom: '1.5rem',
+              textAlign: 'left',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>history</span>
+              Continuar de onde parei
+            </h3>
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gap: '1.25rem',
+              marginBottom: '2rem'
+            }}>
+              {empresas.slice(0, 3).map((emp, index) => (
+                <button
+                  key={emp.id}
+                  onClick={() => selecionarEmpresa(emp.id)}
+                  style={{
+                    padding: '1.25rem',
+                    backgroundColor: index === 0 ? '#f0f9ff' : 'white',
+                    border: index === 0 ? '2px solid #1683c2' : '1px solid #e2e8f0',
+                    borderRadius: '16px',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    textAlign: 'left',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '1rem',
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-4px)';
+                    e.currentTarget.style.boxShadow = '0 12px 20px rgba(0,0,0,0.05)';
+                    if (index !== 0) e.currentTarget.style.borderColor = '#1683c2';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                    if (index !== 0) e.currentTarget.style.borderColor = '#e2e8f0';
+                  }}
+                >
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '12px',
+                    backgroundColor: index === 0 ? '#1683c2' : '#f1f5f9',
+                    color: index === 0 ? 'white' : '#64748b',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontWeight: '800',
+                    fontSize: '18px',
+                    flexShrink: 0
+                  }}>
+                    {emp.nome.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div style={{ flex: 1, overflow: 'hidden' }}>
+                    <div style={{ fontWeight: '700', color: '#1e293b', fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {emp.nome}
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '2px' }}>
+                      {emp.projetos?.length || 0} Projetos
+                    </div>
+                  </div>
+                  {index === 0 && (
+                    <div style={{
+                      position: 'absolute',
+                      top: 0,
+                      right: 0,
+                      backgroundColor: '#1683c2',
+                      color: 'white',
+                      fontSize: '9px',
+                      fontWeight: '800',
+                      padding: '4px 8px',
+                      borderBottomLeftRadius: '8px',
+                      textTransform: 'uppercase'
+                    }}>
+                      Recente
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '1rem',
+          paddingTop: '1.5rem',
+          borderTop: hasEmpresas ? '1px solid #f1f5f9' : 'none'
+        }}>
+          <button
+            onClick={() => onNavigate('minhas-empresas')}
+            style={{
+              padding: '0.875rem 2rem',
+              backgroundColor: '#1683c2',
+              color: 'white',
+              border: 'none',
+              borderRadius: '12px',
+              fontSize: '0.95rem',
+              fontWeight: '700',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#126da3'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1683c2'}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>business_center</span>
+            Minhas Organizações
+          </button>
+          <button
+            onClick={() => onNavigate('empresa', { mode: 'new' })}
+            style={{
+              padding: '0.875rem 2rem',
+              backgroundColor: 'white',
+              color: '#1683c2',
+              border: '2px solid #1683c2',
+              borderRadius: '12px',
+              fontSize: '0.95rem',
+              fontWeight: '700',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#f0f9ff';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'white';
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>add_circle</span>
+            Cadastrar Nova
+          </button>
+        </div>
       </div>
     );
   }

@@ -12,22 +12,18 @@ const WelcomeScreen = ({ onStart }) => {
   });
 
   const handleQuickStart = () => {
-    if (empresas.length === 0) {
-      // Cria empresa padrão
-      adicionarEmpresa({
-        nome: 'Minha Empresa',
-        valorPF: 850.00,
-        hcpp: 20,
-        tecnologias: [],
-        experienciaTime: [],
-        faseCiclo: 'codificacao',
-        timeProjeto: [],
-      });
-      selecionarEmpresa(0);
-    } else {
-      // Seleciona primeira empresa
-      selecionarEmpresa(0);
-    }
+    // Cria empresa padrão
+    adicionarEmpresa({
+      nome: 'Minha Empresa',
+      valorPF: 850.00,
+      hcpp: 20,
+      tecnologias: [],
+      experienciaTime: [],
+      faseCiclo: 'codificacao',
+      timeProjeto: [],
+    });
+    // A seleção da nova empresa acontecerá via useEffect no Context ou manualmente se necessário
+    // Mas no fluxo de onboarding, queremos que o usuário comece.
     onStart();
   };
 
@@ -55,51 +51,44 @@ const WelcomeScreen = ({ onStart }) => {
     {
       icon: 'calculate',
       title: 'O que são Pontos de Função?',
-      description: 'Métrica padrão internacional para medir o tamanho funcional de software. Desenvolvida pela IFPUG (International Function Point Users Group).',
+      description: 'Métrica padrão internacional para medir o tamanho funcional de software. Desenvolvida pela IFPUG.',
       color: '#1246e2'
     },
     {
       icon: 'analytics',
-      title: 'Benefícios da Análise',
-      description: 'Estimativa precisa de esforço, custos e prazos. Padronização de métricas. Melhoria na gestão de projetos de software.',
+      title: 'Estimativas Precisas',
+      description: 'Preveja esforço, custos e prazos com base técnica sólida e reconhecida mundialmente.',
       color: '#7c3aed'
     },
     {
       icon: 'rule',
       title: 'Método IFPUG 4.3.1',
-      description: 'Versão mais atual e reconhecida internacionalmente. Considera funções de dados (ALI/AIE) e transações (EE/SE/CE).',
+      description: 'Implementação completa das regras de contagem para funções de dados e transações.',
       color: '#0ea5e9'
     },
     {
-      icon: 'schedule',
-      title: 'Cálculo de Esforço',
-      description: 'Combine PF com HCPP (Horas por Ponto de Função) para estimar esforço em horas e dias de trabalho.',
-      color: '#10b981'
-    },
-    {
       icon: 'tune',
-      title: 'Valor de Ajuste de Função (VAF)',
-      description: 'Ajuste o tamanho funcional com base em 14 características do sistema. Fórmula: 0,65 + (Σ × 0,01). Intervalo: 0,65 a 1,35.',
+      title: 'Valor de Ajuste (VAF)',
+      description: 'Ajuste o tamanho funcional com base em 14 características sistêmicas do seu projeto.',
       color: '#f59e0b'
     }
   ];
 
   return (
     <div style={styles.container}>
-      {/* Header/Banner - ESPAÇO PARA banner.png */}
+      {/* Header/Banner */}
       <div style={styles.header}>
         <div style={styles.logoContainer}>
-          {/* ESPAÇO RESERVADO PARA banner.png */}
           <div style={styles.logoPlaceholder}>
             <img src="/icon.png" alt="StandardPoint Logo" style={{ width: '80px', height: '80px', objectFit: 'contain' }} />
             <h1 style={styles.logoText}>StandardPoint</h1>
           </div>
-          <p style={styles.tagline}>Ferramenta Profissional de Análise de Pontos de Função</p>
+          <p style={styles.tagline}>Bem-vindo ao Novo Padrão de Análise de Software</p>
           <div style={styles.versionBadge}>
             <span className="material-symbols-outlined" style={styles.badgeIcon}>
               verified
             </span>
-            IFPUG 4.3.1 Compliant • v1.1
+            Onboarding Inicial • IFPUG Compliant
           </div>
         </div>
       </div>
@@ -112,12 +101,12 @@ const WelcomeScreen = ({ onStart }) => {
             <span className="material-symbols-outlined" style={styles.introIcon}>
               rocket_launch
             </span>
-            Comece sua análise de software
+            Vamos configurar seu primeiro acesso
           </h2>
           <p style={styles.introText}>
-            O <strong>StandardPoint</strong> é uma ferramenta completa para análise de pontos de função
-            seguindo o padrão internacional IFPUG. Ideal para gerentes de projeto, analistas e
-            equipes de desenvolvimento que precisam de estimativas precisas.
+            Detectamos que você ainda não possui empresas cadastradas.
+            O <strong>StandardPoint</strong> organiza suas análises por empresa e projeto.
+            Comece criando seu ambiente de trabalho agora.
           </p>
         </div>
 
@@ -125,7 +114,7 @@ const WelcomeScreen = ({ onStart }) => {
         <div style={styles.cardsGrid}>
           {infoCards.map((card, index) => (
             <div key={index} style={{ ...styles.infoCard, borderLeftColor: card.color }}>
-              <div style={{ ...styles.cardIcon, backgroundColor: `${card.color}20` }}>
+              <div style={{ ...styles.cardIcon, backgroundColor: `${card.color}15` }}>
                 <span className="material-symbols-outlined" style={{ ...styles.cardIconInner, color: card.color }}>
                   {card.icon}
                 </span>
@@ -140,11 +129,9 @@ const WelcomeScreen = ({ onStart }) => {
         <div style={styles.actionSection}>
           {!showEmpresaSetup ? (
             <>
-              <h3 style={styles.actionTitle}>Pronto para começar?</h3>
+              <h3 style={styles.actionTitle}>Como deseja começar?</h3>
               <p style={styles.actionText}>
-                {empresas.length > 0
-                  ? `Você tem ${empresas.length} empresa(s) cadastrada(s). Selecione uma para continuar ou crie uma nova.`
-                  : 'Crie sua primeira empresa para iniciar a análise de pontos de função.'}
+                Escolha o início rápido com dados sugeridos ou configure sua empresa agora.
               </p>
 
               <div style={styles.actionButtons}>
@@ -155,9 +142,9 @@ const WelcomeScreen = ({ onStart }) => {
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1246e2'}
                 >
                   <span className="material-symbols-outlined" style={styles.buttonIcon}>
-                    play_arrow
+                    bolt
                   </span>
-                  {empresas.length > 0 ? 'Continuar com Empresa Padrão' : 'Início Rápido'}
+                  Configuração Rápida
                 </button>
 
                 <button
@@ -169,50 +156,9 @@ const WelcomeScreen = ({ onStart }) => {
                   <span className="material-symbols-outlined" style={styles.buttonIcon}>
                     add_business
                   </span>
-                  {empresas.length > 0 ? 'Criar Nova Empresa' : 'Configurar Empresa Personalizada'}
+                  Configurar Manualmente
                 </button>
               </div>
-
-              {empresas.length > 0 && (
-                <div style={styles.existingEmpresas}>
-                  <h4 style={styles.existingTitle}>
-                    <span className="material-symbols-outlined" style={styles.existingIcon}>
-                      apartment
-                    </span>
-                    Empresas Disponíveis
-                  </h4>
-                  <div style={styles.empresasList}>
-                    {empresas.map((empresa, index) => (
-                      <button
-                        key={empresa.id || index}
-                        onClick={() => { selecionarEmpresa(index); onStart(); }}
-                        style={styles.empresaButton}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#f1f5f9';
-                          e.currentTarget.style.borderColor = '#1246e2';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'white';
-                          e.currentTarget.style.borderColor = '#e2e8f0';
-                        }}
-                      >
-                        <div style={styles.empresaAvatar}>
-                          {empresa.nome?.substring(0, 2).toUpperCase() || 'ME'}
-                        </div>
-                        <div style={styles.empresaInfo}>
-                          <span style={styles.empresaNome}>{empresa.nome || `Empresa ${index + 1}`}</span>
-                          <span style={styles.empresaDetails}>
-                            PF: R$ {empresa.valorPF?.toFixed(2)} • HCPP: {empresa.hcpp}h
-                          </span>
-                        </div>
-                        <span className="material-symbols-outlined" style={styles.empresaArrow}>
-                          arrow_forward
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
             </>
           ) : (
             // Formulário de nova empresa
