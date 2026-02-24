@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Documentação</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            padding: 25px;
+            background-color: #f8fafc;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        h1 {
+            color: #1e3a8a;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #2563eb;
+            font-size: 1.2rem;
+            margin-top: 25px;
+        }
+
+        h3 {
+            color: #475569;
+            font-size: 1rem;
+            margin-top: 15px;
+        }
+
+        p,
+        li {
+            color: #475569;
+        }
+
+        ul,
+        ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .alert {
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .alert strong {
+            color: #b45309;
+        }
+
+        .action-step {
+            display: inline-block;
+            background-color: #e2e8f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+            font-size: 0.9em;
+            margin: 0 4px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #2563eb;
+        }
+
+        .shortcut-hint {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 5px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Documentação Operacional</h1>
+
+    <h2>Como usar as telas (Passo a Passo)</h2>
+    <p>Para utilizar o StandardPoint corretamente, siga o fluxo de cadastro e análise nesta ordem:</p>
+    <ol>
+        <li><span class="action-step">Empresa</span>: Cadastre a empresa alvo da análise.</li>
+        <li><span class="action-step">Projeto</span>: Crie um projeto vinculado à empresa cadastrada.</li>
+        <li><span class="action-step">Requisitos</span>: <strong>Importante!</strong> Você precisa cadastrar os
+            requisitos para poder associar as funções posteriormente.</li>
+        <li><span class="action-step">Funções</span>: Realize a contagem e classificação das funções de dados (ALI, AIE)
+            e transação (EE, SE, CE), vinculando-as aos requisitos pertinentes.</li>
+        <li><span class="action-step">Relatórios</span>: Acesse a área de relatórios para visualizar os totais e
+            análises do projeto.</li>
+    </ol>
+
+    <h2>Valor de Ajuste de Função (VAF)</h2>
+    <div class="alert">
+        <strong>Aviso:</strong> É necessário preencher o questionário do <strong>VAF</strong> (Valor de Ajuste de
+        Função) nas configurações do projeto para que o cálculo final fique de acordo com as normas do IFPUG. Sem isso,
+        apenas o PFNA (Pontos de Função Não Ajustados) será exibido com precisão.
+    </div>
+
+    <h2>Tipos de Funções</h2>
+    <ul>
+        <li><strong>Desenvolvimento:</strong> Usado na criação de um novo software. Todas as funções são avaliadas.</li>
+        <li><strong>Melhoria:</strong> Usado quando o software já existe e passará por alterações (Adição, Alteração ou
+            Exclusão).</li>
+        <li><strong>Baseline:</strong> Contagem do tamanho funcional de um sistema existente, refletindo seu estado
+            atual.</li>
+    </ul>
+
+    <h2>Gerenciamento do Sistema</h2>
+    <h3>Salvar um projeto</h3>
+    <p>O aplicativo gerencia os dados e tem auto-save, mas você também pode realizar backups nas configurações ou quando
+        solicitado. Certifique-se de salvar todas as modificações no formulário.</p>
+
+    <h3>Exportar para PDF</h3>
+    <p>Dentro da tela de <strong>Relatórios</strong>, utilize o botão "Exportar PDF" para gerar um arquivo detalhado
+        contendo a contagem e métricas do projeto selecionado.</p>
+
+    <h3>Configurar usuários</h3>
+    <p>Acesse o menu "Configurações" (ou gerencie os acessos/autenticação no fluxo inicial) para criar e gerenciar
+        perfis de analistas de métricas.</p>
+
+    <div class="footer">
+        <button onclick="window.close()">Fechar</button>
+        <span class="shortcut-hint">Dica: Use a tecla Esc para fechar rapidamente.</span>
+    </div>
+
+    <script>
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.close();
+            }
+        });
+    </script>
+</body>
+
+</html>

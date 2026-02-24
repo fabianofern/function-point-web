@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Guia da Análise de Pontos de Função</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            padding: 20px;
+            background-color: #f8fafc;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        h1 {
+            color: #1e3a8a;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            color: #2563eb;
+            font-size: 1.2rem;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #eff6ff;
+            color: #1e3a8a;
+            font-weight: 600;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #2563eb;
+        }
+
+        .shortcut-hint {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 5px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Guia da Análise de Pontos de Função</h1>
+
+    <h2>Matriz de Complexidade (Funções de Dados)</h2>
+    <table>
+        <tr>
+            <th>Campos (DET) / Registros (RET)</th>
+            <th>1 a 19 DETs</th>
+            <th>20 a 50 DETs</th>
+            <th>Mais de 50 DETs</th>
+        </tr>
+        <tr>
+            <th>1 RET</th>
+            <td>Baixa</td>
+            <td>Baixa</td>
+            <td>Média</td>
+        </tr>
+        <tr>
+            <th>2 a 5 RETs</th>
+            <td>Baixa</td>
+            <td>Média</td>
+            <td>Alta</td>
+        </tr>
+        <tr>
+            <th>Mais de 5 RETs</th>
+            <td>Média</td>
+            <td>Alta</td>
+            <td>Alta</td>
+        </tr>
+    </table>
+
+    <h2>Matriz de Complexidade (Funções de Transação)</h2>
+    <table>
+        <tr>
+            <th>Campos (DET) / Arquivos (FTR)</th>
+            <th>1 a 4 DETs</th>
+            <th>5 a 15 DETs</th>
+            <th>Mais de 15 DETs</th>
+        </tr>
+        <tr>
+            <th>0 a 1 FTR</th>
+            <td>Baixa</td>
+            <td>Baixa</td>
+            <td>Média</td>
+        </tr>
+        <tr>
+            <th>2 a 3 FTRs</th>
+            <td>Baixa</td>
+            <td>Média</td>
+            <td>Alta</td>
+        </tr>
+        <tr>
+            <th>Mais de 3 FTRs</th>
+            <td>Média</td>
+            <td>Alta</td>
+            <td>Alta</td>
+        </tr>
+    </table>
+
+    <h2>Tabela de Contribuição</h2>
+    <table>
+        <tr>
+            <th>Tipo de Função</th>
+            <th>Baixa</th>
+            <th>Média</th>
+            <th>Alta</th>
+        </tr>
+        <tr>
+            <th>ALI (Arquivo Lógico Interno)</th>
+            <td>7 PF</td>
+            <td>10 PF</td>
+            <td>15 PF</td>
+        </tr>
+        <tr>
+            <th>AIE (Arquivo de Interface Externa)</th>
+            <td>5 PF</td>
+            <td>7 PF</td>
+            <td>10 PF</td>
+        </tr>
+        <tr>
+            <th>EE (Entrada Externa)</th>
+            <td>3 PF</td>
+            <td>4 PF</td>
+            <td>6 PF</td>
+        </tr>
+        <tr>
+            <th>SE (Saída Externa)</th>
+            <td>4 PF</td>
+            <td>5 PF</td>
+            <td>7 PF</td>
+        </tr>
+        <tr>
+            <th>CE (Consulta Externa)</th>
+            <td>3 PF</td>
+            <td>4 PF</td>
+            <td>6 PF</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <button onclick="window.close()">Fechar</button>
+        <span class="shortcut-hint">Dica: Use a tecla Esc para fechar rapidamente.</span>
+    </div>
+
+    <script>
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                window.close();
+            }
+        });
+    </script>
+</body>
+
+</html>
