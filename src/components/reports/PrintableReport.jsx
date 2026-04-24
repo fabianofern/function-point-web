@@ -2,6 +2,22 @@ import React, { useMemo } from 'react';
 import { useFunctionContext } from '../../context/FunctionContext';
 import { useAuthStore } from '../../stores/authStore';
 import { calcularMetricasSquad } from '../../utils/squadUtils';
+const CARACTERISTICAS_CGS = [
+    { id: 'comunicacaoDados', nome: 'Comunicação de Dados' },
+    { id: 'processamentoDistribuido', nome: 'Processamento Distribuído' },
+    { id: 'performance', nome: 'Performance' },
+    { id: 'configuracaoEquipamento', nome: 'Configuração do Equipamento' },
+    { id: 'volumeTransacoes', nome: 'Volume de Transações' },
+    { id: 'entradaDadosOnline', nome: 'Entrada de Dados On-line' },
+    { id: 'eficienciaUsuarioFinal', nome: 'Eficiência do Usuário Final' },
+    { id: 'atualizacaoOnline', nome: 'Atualização On-line' },
+    { id: 'processamentoComplexo', nome: 'Processamento Complexo' },
+    { id: 'reusabilidade', nome: 'Reusabilidade de Código' },
+    { id: 'facilidadeInstalacao', nome: 'Facilidade de Instalação' },
+    { id: 'facilidadeOperacao', nome: 'Facilidade de Operação' },
+    { id: 'multiplosLocais', nome: 'Múltiplos Locais' },
+    { id: 'facilidadeMudancas', nome: 'Facilidade de Mudanças' }
+];
 
 const PrintableReport = ({ activeTab, filteredData, reportRef }) => {
     const { empresaAtualObj, projetoAtualObj, totals, funcoes } = useFunctionContext();
@@ -14,7 +30,8 @@ const PrintableReport = ({ activeTab, filteredData, reportRef }) => {
         esforcoTotal,
         hcppPadrao,
         previsaoEntrega,
-        capacidadeDiariaSquad
+        capacidadeDiariaSquad,
+        membros
     } = calcularMetricasSquad(projetoAtualObj, empresaAtualObj, totals);
 
     const stats = useMemo(() => {
@@ -57,7 +74,9 @@ const PrintableReport = ({ activeTab, filteredData, reportRef }) => {
                 boxSizing: 'border-box'
             }}
         >
-            {/* Cabeçalho */}
+            {/* Secao de Cabecalho (utilizada para rasterizacao parcial) */}
+            <div id="report-header-section" style={{ backgroundColor: 'white', paddingBottom: '10px' }}>
+                {/* Cabeçalho */}
             <div style={styles.header}>
                 <div style={styles.headerTop}>
                     <img src="/banner.png" alt="Logo" style={styles.logo} />
@@ -74,6 +93,52 @@ const PrintableReport = ({ activeTab, filteredData, reportRef }) => {
                 <div style={styles.metaItem}><span style={styles.metaLabel}>PROJETO</span><span style={styles.metaValue}>{projetoAtualObj.nome}</span></div>
                 <div style={styles.metaItem}><span style={styles.metaLabel}>EMISSOR</span><span style={styles.metaValue}>{user?.name || 'Sistema'}</span></div>
                 <div style={styles.metaItem}><span style={styles.metaLabel}>DATA</span><span style={styles.metaValue}>{new Date().toLocaleString('pt-BR')}</span></div>
+            </div>
+            
+            {/* Resumos para o Relatório Detalhado (Para serem rasterizados no topo) */}
+            {activeTab === 'detalhado' && (
+                <div style={{ marginTop: '20px', display: 'flex', gap: '20px' }}>
+                    {/* Squad Card */}
+                    <div style={{ flex: 1, ...styles.section, marginBottom: 0, padding: '15px', backgroundColor: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                        <h2 style={{...styles.sectionTitle, fontSize: '11px', borderBottom: 'none', marginBottom: '10px'}}>Planejamento de Execução (Squad)</h2>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginBottom: '10px' }}>
+                            {(membros || []).map((m, i) => (
+                                <div key={i} style={{ padding: '3px 8px', backgroundColor: 'white', border: '1px solid #fbcfe8', borderRadius: '12px', fontSize: '8px', color: '#831843' }}>
+                                    {m.nome} {m.horasEntregues.toFixed(1)} (h/dia)
+                                </div>
+                            ))}
+                        </div>
+                        <div style={{ marginTop: '10px', fontSize: '8px', display: 'flex', justifyContent: 'space-between', backgroundColor: '#fdf4ff', padding: '5px', borderRadius: '4px', border: '1px solid #fbcfe8', color: '#831843' }}>
+                            <span><strong>Esforço Base:</strong> {totals.esforcoTotal} h</span>
+                            <span><strong>Previsão:</strong> ~{capacidadeDiariaSquad > 0 ? Math.ceil(totals.esforcoTotal / capacidadeDiariaSquad) : 0} Dias</span>
+                            <span><strong>Data:</strong> {previsaoEntrega || '-'}</span>
+                        </div>
+                    </div>
+
+                    {/* VAF Card */}
+                    <div style={{ flex: 1, ...styles.section, marginBottom: 0, padding: '15px', backgroundColor: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                        <h2 style={{...styles.sectionTitle, fontSize: '11px', borderBottom: 'none', marginBottom: '10px'}}>Valor de Ajuste (VAF)</h2>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{ fontSize: '9px', color: '#64748b' }}>Índice VAF</div>
+                                <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#1246e2' }}>{totals.vaf}</div>
+                            </div>
+                            <div style={{ textAlign: 'center' }}>
+                                <div style={{ fontSize: '9px', color: '#64748b' }}>Soma</div>
+                                <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#475569' }}>
+                                    {projetoAtualObj.vaf?.caracteristicas ? Object.values(projetoAtualObj.vaf.caracteristicas).reduce((a, b) => a + (Number(b) || 0), 0) : 35}
+                                </div>
+                            </div>
+                        </div>
+                        <div style={{ fontSize: '10px', fontWeight: 'bold', color: '#1e3a8a', textAlign: 'center', backgroundColor: '#eff6ff', padding: '5px', borderRadius: '4px', marginBottom: '5px' }}>
+                            PF Ajustado: {totals.totalPFAjustado} PF
+                        </div>
+                        <div style={{ fontSize: '12px', fontWeight: 'bold', color: 'white', textAlign: 'center', backgroundColor: '#1e3a8a', padding: '8px', borderRadius: '4px' }}>
+                            Acordo Comercial Estimado: R$ {Number(totals.valorTotal || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </div>
+                    </div>
+                </div>
+            )}
             </div>
 
             {/* CONTEÚDO DINÂMICO BASEADO NA ABA */}

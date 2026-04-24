@@ -63,13 +63,15 @@ const ReportDetalhado = () => {
                     <table style={styles.table}>
                         <thead>
                             <tr>
-                                <th style={styles.th}>#</th>
+                                <th style={styles.th}>ID</th>
                                 <th style={styles.th}>Nome da Função</th>
                                 <th style={styles.th}>Tipo</th>
-                                <th style={styles.th}>Elementos</th>
-                                <th style={styles.th}>Complexidade</th>
+                                <th style={styles.th}>TD</th>
+                                <th style={styles.th}>TR/AR</th>
+                                <th style={styles.th}>Cx.</th>
                                 <th style={styles.th}>PF</th>
-                                <th style={styles.th}>Requisito Vinculado</th>
+                                <th style={styles.th}>Requisito</th>
+                                <th style={styles.th}>Evidências da Auditoria</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -92,13 +94,14 @@ const ReportDetalhado = () => {
                                             {func.tipo}
                                         </span>
                                     </td>
-                                    <td style={styles.td}>{getJustificativa(func)}</td>
+                                    <td style={styles.td}>{func.td}</td>
+                                    <td style={styles.td}>{func.arTr}</td>
                                     <td style={styles.td}>
                                         <span style={{
                                             color: func.complexidade === 'Alta' ? '#ef4444' : func.complexidade === 'Media' ? '#f59e0b' : '#22c55e',
                                             fontWeight: '600'
                                         }}>
-                                            {func.complexidade}
+                                            {func.complexidade === 'Media' ? 'M' : func.complexidade.charAt(0)}
                                         </span>
                                     </td>
                                     <td style={styles.td}><strong>{func.pf}</strong></td>
@@ -106,13 +109,17 @@ const ReportDetalhado = () => {
                                         {func.requisitoId ? (
                                             <div>
                                                 <span style={styles.reqBadge}>{func.requisitoId}</span>
-                                                <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px' }}>
-                                                    {func.requisitoDescricao || 'Sem descrição'}
-                                                </div>
                                             </div>
                                         ) : (
-                                            <span style={{ color: '#cbd5e1', fontSize: '0.8rem' }}>Não vinculado</span>
+                                            <span style={{ color: '#cbd5e1', fontSize: '0.8rem' }}>-</span>
                                         )}
+                                    </td>
+                                    <td style={styles.td}>
+                                        <div style={{ fontSize: '0.8rem', color: '#475569' }}>
+                                            {func.listaTDs ? <div><strong>TDs:</strong> {Array.isArray(func.listaTDs) ? func.listaTDs.join(', ') : func.listaTDs}</div> : null}
+                                            {func.listaARsTRs ? <div><strong>ARs/TRs:</strong> {Array.isArray(func.listaARsTRs) ? func.listaARsTRs.join(', ') : func.listaARsTRs}</div> : null}
+                                            {func.observacoesAuditoria ? <div><strong>Obs:</strong> {func.observacoesAuditoria}</div> : (!func.listaTDs && !func.listaARsTRs && '-')}
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
@@ -124,9 +131,9 @@ const ReportDetalhado = () => {
                         </tbody>
                         <tfoot>
                             <tr style={{ backgroundColor: '#f8fafc', fontWeight: 'bold' }}>
-                                <td colSpan="5" style={{ ...styles.td, textAlign: 'right' }}>Total PF Bruto:</td>
+                                <td colSpan="6" style={{ ...styles.td, textAlign: 'right' }}>Total PF Bruto:</td>
                                 <td style={styles.td}>{totals.totalPFBruto}</td>
-                                <td></td>
+                                <td colSpan="2"></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -140,46 +147,33 @@ const ReportDetalhado = () => {
                     Planejamento de Execução (Squad Alocado)
                 </h3>
 
-                <div style={styles.tableContainer}>
-                    <table style={styles.table}>
-                        <thead>
-                            <tr>
-                                <th style={styles.th}>Membro do Squad</th>
-                                <th style={styles.th}>Cargo / Papel</th>
-                                <th style={styles.th}>Fator Individual (HCPP)</th>
-                                <th style={styles.th}>Dedicação</th>
-                                <th style={styles.th}>Carga Horária / Dia de Entrega</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {membros.map((membro, index) => (
-                                <tr key={membro.id || index} style={index % 2 === 0 ? styles.trEven : styles.trOdd}>
-                                    <td style={{ ...styles.td, fontWeight: '600' }}>{membro.nome}</td>
-                                    <td style={styles.td}>{membro.cargoNome}</td>
-                                    <td style={styles.td}>{membro.fatorIndividual} h/PF</td>
-                                    <td style={styles.td}>{membro.dedicacao}%</td>
-                                    <td style={{ ...styles.td, fontWeight: 'bold', color: '#0ea5e9' }}>
-                                        {membro.horasEntregues.toFixed(1)} h/dia
-                                    </td>
-                                </tr>
-                            ))}
-                            {membros.length === 0 && (
-                                <tr>
-                                    <td colSpan="5" style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>Nenhum squad alocado. Prazo será estimado com 1 Pessoa base (8h/dia).</td>
-                                </tr>
-                            )}
-                        </tbody>
-                        <tfoot>
-                            <tr style={{ backgroundColor: '#f8fafc', fontWeight: 'bold' }}>
-                                <td colSpan="4" style={{ ...styles.td, textAlign: 'right' }}>Capacidade Total do Squad (Velocidade):</td>
-                                <td style={{ ...styles.td, color: '#0ea5e9' }}>{capacidadeDiariaSquad.toFixed(1)} h/dia</td>
-                            </tr>
-                            <tr style={{ backgroundColor: '#e0e7ff', fontWeight: 'bold' }}>
-                                <td colSpan="4" style={{ ...styles.td, textAlign: 'right', color: '#4f46e5' }}>Previsão de Entrega (Calendário):</td>
-                                <td style={{ ...styles.td, color: '#4f46e5' }}>{previsaoEntrega || '-'}</td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                <div style={{ backgroundColor: '#fdf4ff', border: '1px solid #fbcfe8', borderRadius: '8px', padding: '1.5rem', marginBottom: '2rem' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '1.5rem' }}>
+                        {membros.map((membro, index) => (
+                            <div key={membro.id || index} style={{ 
+                                padding: '6px 16px', 
+                                backgroundColor: 'white', 
+                                border: '1px solid #fbcfe8', 
+                                borderRadius: '20px', 
+                                fontSize: '0.9rem',
+                                color: '#831843',
+                                boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                            }}>
+                                {membro.nome} {membro.horasEntregues.toFixed(1)} (h/dia)
+                            </div>
+                        ))}
+                        {membros.length === 0 && (
+                            <div style={{ padding: '8px 16px', color: '#94a3b8', fontSize: '0.9rem', fontStyle: 'italic' }}>
+                                Nenhum squad alocado. Prazo será estimado com 1 Pessoa base (8h/dia).
+                            </div>
+                        )}
+                    </div>
+                    
+                    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', borderTop: '1px solid #fbcfe8', paddingTop: '15px', color: '#831843', fontSize: '0.95rem' }}>
+                        <div><strong>Esforço Base do Projeto:</strong> {totals.esforcoTotal} Horas Totais</div>
+                        <div><strong>Previsão Matemática:</strong> ~{capacidadeDiariaSquad > 0 ? Math.ceil(totals.esforcoTotal / capacidadeDiariaSquad) : 0} Dias Úteis</div>
+                        <div><strong>Data Estimada:</strong> {previsaoEntrega || '-'}</div>
+                    </div>
                 </div>
             </div>
 
@@ -231,10 +225,33 @@ const ReportDetalhado = () => {
                 </div>
 
                 <div style={styles.finalCalculation}>
-                    <h4>Cálculo Final</h4>
-                    <p style={{ fontSize: '1.2rem' }}>
-                        PF Ajustado = PF Bruto ({totals.totalPFBruto}) × VAF ({totals.vaf}) = <strong>{totals.totalPFAjustado} PF</strong>
-                    </p>
+                    <div style={{ marginBottom: '1rem', backgroundColor: '#f0f9ff', padding: '1.5rem', borderRadius: '8px', border: '1px solid #bae6fd' }}>
+                        <h4 style={{ margin: '0 0 15px 0', fontSize: '1.2rem', color: '#1e3a8a', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span className="material-symbols-outlined">calculate</span> Cálculo Final Certificado
+                        </h4>
+                        
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #e0f2fe', color: '#475569' }}>
+                            <span>Pontos de Função Brutos (PFB):</span>
+                            <strong>{totals.totalPFBruto} PF</strong>
+                        </div>
+                        
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '2px solid #93c5fd', color: '#475569' }}>
+                            <span>Fator de Ajuste (VAF):</span>
+                            <strong>x {totals.vaf}</strong>
+                        </div>
+                        
+                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0 0 0', color: '#2563eb', fontSize: '1.3rem' }}>
+                            <strong>PF Ajustado:</strong>
+                            <strong>{totals.totalPFAjustado} PF</strong>
+                        </div>
+                    </div>
+
+                    <div style={{ backgroundColor: '#1e3a8a', color: 'white', padding: '1.5rem', borderRadius: '8px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '0.95rem', color: '#bfdbfe', marginBottom: '8px' }}>Acordo Comercial Estimado</div>
+                        <div style={{ fontSize: '2rem', fontWeight: 'bold' }}>
+                            R$ {Number(totals.valorTotal || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

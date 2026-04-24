@@ -18,8 +18,9 @@ import ValorAjusteContent from './components/ValorAjusteContent';
 
 
 import Reports from './components/reports/Reports';
-
 import DataCleaning from './components/DataCleaning';
+import ManualDoc from './components/docs/ManualDoc';
+import GuiaDoc from './components/docs/GuiaDoc';
 import './styles/index.css';
 
 // ====================== HOOK PARA ROTEAMENTO POR HASH ======================
@@ -244,6 +245,16 @@ function AppContent() {
 
   // Removida a tela de bloqueio para empresas.length === 0
   // O componente DashboardContent já trata o caso de zero empresas exibindo as opções de criação.
+
+  // 4. Renderização de Páginas Externas (Documentação)
+  if (currentPage.startsWith('docs/')) {
+    return (
+      <div style={{ backgroundColor: '#f8fafc', minHeight: '100vh' }}>
+        {currentPage === 'docs/manual' && <ManualDoc />}
+        {currentPage === 'docs/guia' && <GuiaDoc />}
+      </div>
+    );
+  }
 
   // Fluxo normal com empresa selecionada ou navegação para lista de empresas
   return (

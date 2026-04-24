@@ -27,7 +27,8 @@ const Sidebar = ({ currentPage, onNavigate }) => {
   // Estado para controlar submenus abertos
   const [openMenus, setOpenMenus] = useState({
     empresa: false,
-    projetos: false
+    projetos: false,
+    ajuda: false
   });
 
   // Função para navegação
@@ -43,8 +44,6 @@ const Sidebar = ({ currentPage, onNavigate }) => {
   const toggleMenu = (menu) => {
     setOpenMenus(prev => ({ ...prev, [menu]: !prev[menu] }));
   };
-
-
 
   // Toggle mobile menu
   const toggleMobileMenu = () => {
@@ -105,10 +104,6 @@ const Sidebar = ({ currentPage, onNavigate }) => {
       boxShadow: '2px 0 10px rgba(0, 0, 0, 0.2)',
       overflow: 'hidden',
     },
-
-
-
-
 
     logoContainer: {
       padding: '1.5rem',
@@ -233,6 +228,11 @@ const Sidebar = ({ currentPage, onNavigate }) => {
       whiteSpace: 'nowrap',
     },
 
+    navGroup: {
+      display: 'flex',
+      flexDirection: 'column',
+    },
+
     empresaBadge: {
       position: 'absolute',
       right: '8px',
@@ -323,29 +323,19 @@ const Sidebar = ({ currentPage, onNavigate }) => {
       fontWeight: '500',
     },
 
-    statusDot: {
-      width: '8px',
-      height: '8px',
-      borderRadius: '50%',
-      backgroundColor: '#10b981',
-      position: 'absolute',
-      right: '0',
-      top: '0',
-      boxShadow: '0 0 0 2px #00BFFF',
-    },
-
-    statusInfo: {
+    logoutBtn: {
+      background: 'rgba(255, 255, 255, 0.15)',
+      border: 'none',
+      color: 'white',
+      cursor: 'pointer',
+      padding: '4px',
+      borderRadius: '4px',
       display: 'flex',
       alignItems: 'center',
-      gap: '0.5rem',
-    },
-
-    statusText: {
-      color: 'rgba(255, 255, 255, 0.8)',
-      fontSize: '11px',
-      fontStyle: 'italic',
-      fontWeight: '500',
-    },
+      justifyContent: 'center',
+      marginLeft: '8px',
+      transition: 'all 0.2s'
+    }
   };
 
   // Adicionar estilos globais para esconder scrollbar no Webkit e animações
@@ -412,9 +402,6 @@ const Sidebar = ({ currentPage, onNavigate }) => {
 
       <div style={styles.sidebarContainer} className="no-print">
         <div style={styles.sidebar}>
-
-
-
           {/* Logo */}
           <div style={styles.logoContainer}>
             <div>
@@ -479,7 +466,6 @@ const Sidebar = ({ currentPage, onNavigate }) => {
 
               {openMenus.empresa && (
                 <div style={styles.submenuContainer}>
-                  {/* Visualizar Empresas */}
                   <button
                     onClick={() => handleNavigate('minhas-empresas')}
                     style={isActive('minhas-empresas') ? styles.subNavItemActive : styles.subNavItem}
@@ -499,7 +485,6 @@ const Sidebar = ({ currentPage, onNavigate }) => {
                     )}
                   </button>
 
-                  {/* Cadastrar Empresas (Anteriormente Configurações) */}
                   <button
                     onClick={() => handleNavigate('empresa', { mode: 'new' })}
                     style={isActive('empresa') ? styles.subNavItemActive : styles.subNavItem}
@@ -514,7 +499,6 @@ const Sidebar = ({ currentPage, onNavigate }) => {
                     <span>Cadastrar Empresas</span>
                   </button>
 
-                  {/* Funcionários (Novo - Vazio por enquanto) */}
                   <button
                     onClick={() => handleNavigate('funcionarios')}
                     style={isActive('funcionarios') ? styles.subNavItemActive : styles.subNavItem}
@@ -532,9 +516,7 @@ const Sidebar = ({ currentPage, onNavigate }) => {
               )}
             </div>
 
-            {/* ========================================================= */}
-            {/* NOVO: AGRUPADOR DE PROJETOS COMPLETO (Listagem, Squad, Estimativas) */}
-            {/* ========================================================= */}
+            {/* Projetos */}
             <div style={styles.navGroup}>
               <button
                 onClick={() => toggleMenu('projetos')}
@@ -559,17 +541,15 @@ const Sidebar = ({ currentPage, onNavigate }) => {
                   <span>Projetos</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  {/* Badges */}
                   {!empresaAtualObj ? (
                     <span style={styles.disabledBadge} title="Selecione uma empresa primeiro">
                       <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>lock</span>
                     </span>
                   ) : empresaAtualObj.projetos?.length > 0 ? (
-                    <span style={styles.projetoBadge} title={`${empresaAtualObj.projetos.length} projeto(s)`}>
+                    <span style={styles.projetoBadge}>
                       {empresaAtualObj.projetos.length}
                     </span>
                   ) : null}
-                  {/* Seta do Dropdown */}
                   <span
                     className="material-symbols-outlined"
                     style={{
@@ -583,10 +563,8 @@ const Sidebar = ({ currentPage, onNavigate }) => {
                 </div>
               </button>
 
-              {/* Submenus de Projetos */}
               {openMenus.projetos && (
                 <div style={styles.submenuContainer}>
-                  {/* 1. Gerenciar Projetos */}
                   <button
                     onClick={() => handleNavigate('projetos')}
                     style={isActive('projetos') ? styles.subNavItemActive : styles.subNavItem}
@@ -601,7 +579,6 @@ const Sidebar = ({ currentPage, onNavigate }) => {
                     <span>Gerenciar Projetos</span>
                   </button>
 
-                  {/* 2. Squad (Time do Projeto) */}
                   <button
                     onClick={() => handleNavigate('projeto-squad')}
                     style={isActive('projeto-squad') ? styles.subNavItemActive : styles.subNavItem}
@@ -616,7 +593,6 @@ const Sidebar = ({ currentPage, onNavigate }) => {
                     <span>Squad do Projeto</span>
                   </button>
 
-                  {/* 3. Estimativas e Prazos */}
                   <button
                     onClick={() => handleNavigate('projeto-estimativas')}
                     style={isActive('projeto-estimativas') ? styles.subNavItemActive : styles.subNavItem}
@@ -653,15 +629,13 @@ const Sidebar = ({ currentPage, onNavigate }) => {
               <span className="material-symbols-outlined">add_circle</span>
               <span>Funções</span>
               {!empresaAtualObj && (
-                <span style={styles.disabledBadge} title="Selecione uma empresa primeiro">
-                  <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
-                    lock
-                  </span>
+                <span style={styles.disabledBadge}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>lock</span>
                 </span>
               )}
             </button>
 
-            {/* Valor de Ajuste de Função */}
+            {/* Valor de Ajuste */}
             <button
               onClick={() => handleNavigate('valor-ajuste')}
               style={isActive('valor-ajuste') ? styles.navItemActive : styles.navItem}
@@ -680,10 +654,8 @@ const Sidebar = ({ currentPage, onNavigate }) => {
               <span className="material-symbols-outlined">tune</span>
               <span>Valor de Ajuste de Função</span>
               {!empresaAtualObj && (
-                <span style={styles.disabledBadge} title="Selecione uma empresa primeiro">
-                  <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
-                    lock
-                  </span>
+                <span style={styles.disabledBadge}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>lock</span>
                 </span>
               )}
             </button>
@@ -702,9 +674,15 @@ const Sidebar = ({ currentPage, onNavigate }) => {
                   e.currentTarget.style.backgroundColor = 'transparent';
                 }
               }}
+              disabled={!empresaAtualObj}
             >
               <span className="material-symbols-outlined">description</span>
               <span>Relatórios</span>
+              {!empresaAtualObj && (
+                <span style={styles.disabledBadge}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>lock</span>
+                </span>
+              )}
             </button>
 
             {/* Backups */}
@@ -726,26 +704,58 @@ const Sidebar = ({ currentPage, onNavigate }) => {
               <span>Backups</span>
             </button>
 
-            {/* Controle de Acessos - Master/Admin apenas */}
-            {(empresaAtualObj && (empresaAtualObj.role === 'Master' || empresaAtualObj.role === 'Administrador' || true)) && (
+            {/* Centro de Ajuda */}
+            <div style={styles.navGroup}>
               <button
-                onClick={() => handleNavigate('controle-acessos')}
-                style={isActive('controle-acessos') ? styles.navItemActive : styles.navItem}
+                onClick={() => toggleMenu('ajuda')}
+                style={styles.navItem}
                 onMouseEnter={(e) => {
-                  if (!isActive('controle-acessos')) {
-                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
-                  }
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
                 }}
                 onMouseLeave={(e) => {
-                  if (!isActive('controle-acessos')) {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                  }
+                  e.currentTarget.style.backgroundColor = 'transparent';
                 }}
               >
-                <span className="material-symbols-outlined">admin_panel_settings</span>
-                <span>Controle de Acessos</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span className="material-symbols-outlined">help</span>
+                  <span>Centro de Ajuda</span>
+                </div>
+                <span
+                  className="material-symbols-outlined"
+                  style={{
+                    fontSize: '20px',
+                    transition: 'transform 0.3s ease',
+                    transform: openMenus.ajuda ? 'rotate(180deg)' : 'rotate(0deg)'
+                  }}
+                >
+                  expand_more
+                </span>
               </button>
-            )}
+
+              {openMenus.ajuda && (
+                <div style={styles.submenuContainer}>
+                  <button
+                    onClick={() => window.open('#docs/manual', '_blank')}
+                    style={styles.subNavItem}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>description</span>
+                    <span>Manual e Especificação</span>
+                  </button>
+
+                  <button
+                    onClick={() => window.open('#docs/guia', '_blank')}
+                    style={styles.subNavItem}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>info</span>
+                    <span>Guia e Sobre</span>
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* Limpeza de Dados */}
             <button
@@ -766,14 +776,11 @@ const Sidebar = ({ currentPage, onNavigate }) => {
               <span className="material-symbols-outlined">cleaning_services</span>
               <span>Limpeza de Dados</span>
               {!empresaAtualObj && (
-                <span style={styles.disabledBadge} title="Selecione uma empresa primeiro">
-                  <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
-                    lock
-                  </span>
+                <span style={styles.disabledBadge}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>lock</span>
                 </span>
               )}
             </button>
-
           </nav>
 
           {/* Perfil do Usuário */}
@@ -783,54 +790,31 @@ const Sidebar = ({ currentPage, onNavigate }) => {
                 {currentUser?.name?.charAt(0).toUpperCase() || 'U'}
               </div>
               <div style={styles.profileInfo}>
-                <p style={styles.profileName}>
-                  {currentUser?.name || 'Usuário'}
-                </p>
-                <p style={styles.profileRole}>
-                  {currentUser?.role || 'Visitante'}
-                </p>
+                <p style={styles.profileName}>{currentUser?.name || 'Usuário'}</p>
+                <p style={styles.profileRole}>{currentUser?.role || 'Visitante'}</p>
               </div>
 
-              {/* Status Dot e Botão Logout */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <div style={{
                   width: '8px',
                   height: '8px',
                   borderRadius: '50%',
                   backgroundColor: '#10b981',
-                  boxShadow: '0 0 0 2px #1683c2ff', // Ajustado para cor do fundo
+                  boxShadow: '0 0 0 2px #1683c2ff',
                 }} title="Online" />
 
                 <button
                   onClick={logout}
                   title="Sair / Logout"
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.15)',
-                    border: 'none',
-                    color: 'white',
-                    cursor: 'pointer',
-                    padding: '4px',
-                    borderRadius: '4px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginLeft: '8px',
-                    transition: 'all 0.2s'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.8)'; // Vermelho ao hover
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
-                  }}
+                  style={styles.logoutBtn}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.8)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)'}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>logout</span>
                 </button>
               </div>
-
             </div>
 
-            {/* Informação da empresa atual abaixo do usuário */}
             <div style={{
               marginTop: '0.75rem',
               paddingTop: '0.75rem',

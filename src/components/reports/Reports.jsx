@@ -6,7 +6,7 @@ import ReportAnalitico from './ReportAnalitico';
 import ReportDetalhado from './ReportDetalhado';
 import ReportCompleto from './ReportCompleto';
 import PrintableReport from './PrintableReport';
-// Importação dinâmica dentro da função para evitar erros de SSR/Build
+import { generateReportPDF } from '../../utils/pdfGenerator';
 
 const Reports = () => {
     const [activeTab, setActiveTab] = useState('gerencial');
@@ -36,7 +36,7 @@ const Reports = () => {
         
         // Pequeno delay para garantir que o componente PrintableReport 
         // tenha processado qualquer mudança de estado/renderização
-        setTimeout(() => {
+        setTimeout(async () => {
             const element = document.getElementById('printable-report-content');
             
             if (!element) {
@@ -45,35 +45,16 @@ const Reports = () => {
                 return;
             }
 
-            import('html2pdf.js').then((html2pdfModule) => {
-                const html2pdf = html2pdfModule.default;
-                const opt = {
-                    margin: [10, 10, 10, 10],
-                    filename: `Relatorio_${activeTab}_${projetoAtualObj.nome.replace(/\s+/g, '_')}.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { 
-                        scale: 2, 
-                        useCORS: true, 
-                        logging: false,
-                        letterRendering: true,
-                        scrollY: 0,
-                        scrollX: 0,
-                        backgroundColor: '#ffffff'
-                    },
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-                };
+            const dataContext = {
+                projetoAtualObj,
+                empresaAtualObj,
+                totals,
+                funcoesToExport: activeTab === 'completo' ? filteredData : funcoes
+            };
 
-                html2pdf().set(opt).from(element).save().then(() => {
-                    setIsExportingPDF(false);
-                }).catch(err => {
-                    console.error('Erro ao gerar PDF:', err);
-                    setIsExportingPDF(false);
-                });
-            }).catch(err => {
-                console.error('Erro ao carregar html2pdf:', err);
-                setIsExportingPDF(false);
-            });
+            const success = await generateReportPDF(activeTab, element, dataContext);
+            
+            setIsExportingPDF(false);
         }, 800);
     };
 

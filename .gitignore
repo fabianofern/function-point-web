@@ -109,3 +109,10 @@ backups/
 # Database
 data/
 
+# Scratch and Temporary files
+extract.js
+extract2.js
+out.txt
+temporária/
+public/mer_standardpoint.png
+
