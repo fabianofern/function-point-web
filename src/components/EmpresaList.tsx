@@ -149,7 +149,7 @@ const EmpresaList: React.FC<EmpresaListProps> = ({ onNavigate }) => {
   };
 
   // Estilos (mantidos iguais)
-  const styles = {
+  const styles: Record<string, React.CSSProperties> = {
     container: {
       maxWidth: '1200px',
       margin: '0 auto',
